@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "F2733B23-BFBB-43E4-BD0F-F45764FF4EE1"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B69AC405-1834-4E97-B3C5-A0BF024CA4DD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PokemonApp/Modules/PokemonList/PokemonDetailView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "setData(name:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ED31A55B-E098-4730-BCC2-ACA90F23F12D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PokemonApp/Modules/PokemonList/PokemonDetailView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "setData(name:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7C2C03B4-D162-47A7-8100-824CEB465FB3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PokemonApp/Common/Networking/APIService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "fetchData(paginationState:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BF7F2861-FB76-47EE-AA2B-724E1D02194C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PokemonApp/Common/Networking/APIService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "23"
+            endingLineNumber = "23"
+            landmarkName = "fetchData(paginationState:completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BF7F2861-FB76-47EE-AA2B-724E1D02194C - 261948f0ebe5d8ac"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PokemonApp.APIService.fetchData(paginationState: PokemonAPI.PaginationState&lt;PokemonAPI.PKMPokemon&gt;, completion: (Swift.Optional&lt;PokemonAPI.PKMPagedObject&lt;PokemonAPI.PKMPokemon&gt;&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PokemonApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielduranschutz/Documents/ios_projects/PokemonApp/PokemonApp/Common/Networking/APIService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "23"
+                  endingLineNumber = "23"
+                  offsetFromSymbolStart = "92">
+               </Location>
+               <Location
+                  uuid = "BF7F2861-FB76-47EE-AA2B-724E1D02194C - fa109a5db575dd33"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Result&lt;PokemonAPI.PKMPagedObject&lt;PokemonAPI.PKMPokemon&gt;, Swift.Error&gt;) -&gt; () in PokemonApp.APIService.fetchData(paginationState: PokemonAPI.PaginationState&lt;PokemonAPI.PKMPokemon&gt;, completion: (Swift.Optional&lt;PokemonAPI.PKMPagedObject&lt;PokemonAPI.PKMPokemon&gt;&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PokemonApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/danielduranschutz/Documents/ios_projects/PokemonApp/PokemonApp/Common/Networking/APIService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "120">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

@@ -1,0 +1,26 @@
+PODS:
+  - PokemonAPI (6.0.2)
+  - SDWebImage (5.15.5):
+    - SDWebImage/Core (= 5.15.5)
+  - SDWebImage/Core (5.15.5)
+  - SDWebImageSwiftUI (2.2.3):
+    - SDWebImage (~> 5.10)
+
+DEPENDENCIES:
+  - PokemonAPI
+  - SDWebImageSwiftUI
+
+SPEC REPOS:
+  trunk:
+    - PokemonAPI
+    - SDWebImage
+    - SDWebImageSwiftUI
+
+SPEC CHECKSUMS:
+  PokemonAPI: bff9656c1825288e7f028b415ce6276122ad4c6a
+  SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
+  SDWebImageSwiftUI: 17396b7889f9abc27231caaeb64c537564284aab
+
+PODFILE CHECKSUM: be892204a6e1fcd79e39a5f596a09e1ae8f87d7d
+
+COCOAPODS: 1.12.1

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PokemonAPI
 
 @main
 struct PokemonAppApp: App {
@@ -13,8 +14,10 @@ struct PokemonAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            let pokemonAPI = PokemonAPI()
+            //ContentView()
+                //.environment(\.managedObjectContext, persistenceController.container.viewContext)
+            PokemonListView().environmentObject(pokemonAPI)
         }
     }
 }
