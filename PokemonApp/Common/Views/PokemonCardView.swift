@@ -15,9 +15,9 @@ struct PokemonCardView: View {
     var imageURLString:String?
     @State var imageURLStringForAction:String?
     var images:[String]?
-    var types:String?
-    var abilities:String?
-    var moves:String?
+    var types:[String]?
+    var abilities:[String]?
+    var moves:[String]?
     var isDetail:Bool?
     
     @State var loading:LoadingView? = LoadingView.shared
@@ -78,15 +78,28 @@ struct PokemonCardView: View {
                 }).background(.gray.opacity(0.05)).border(.gray.opacity(0.1)).cornerRadius(10)
                 
                 VStack {
-                    Group {
-                        Text("Types").bold().frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
-                        Text("\(types ?? "")").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                
+                    Text("Types").bold().frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                    if let types = types {
+                        ForEach(types.indices) { index in
+                            Text("\(types[index])").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                        }
                     }
                     
                     Text("Abilities").bold().frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
-                    Text("\(abilities ?? "")").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                    if let abilities = abilities {
+                        ForEach(abilities.indices) { index in
+                            Text("\(abilities[index])").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                        }
+                    }
+                    
                     Text("Moves").bold().frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
-                    Text("\(moves ?? "")").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                    if let moves = moves {
+                        ForEach(moves.indices) { index in
+                            Text("\(moves[index])").frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
+                        }
+                    }
+                    
                 }.padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                 
             } else {
@@ -106,7 +119,19 @@ struct PokemonCardView: View {
                   )
                 
                 Text(name ?? "Unknown Pokemon")
-                Text("Types: \(types ?? "")")
+                
+                if let types = types {
+                    Text("Types:")
+                    HStack {
+                        ForEach(types, id: \.self){ type in
+                            //let newIndex = types.count == 1 ? 0 : index
+                            //if types.count == 1 {
+                                
+                            //} else if types.count == 0
+                            Text("\(type)")
+                        }
+                    }
+                }
                 
             }
             

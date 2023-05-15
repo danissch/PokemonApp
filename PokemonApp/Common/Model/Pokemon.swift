@@ -11,14 +11,16 @@ import PokemonAPI
 struct Pokemon {
     let id:Int?
     let name:String?
-    let images:[PokemonSprite]?
-    let types:[PKMPokemonType]?
-    let abilities: [PKMPokemonAbility]?
-    let moves: [PKMPokemonMove]?
+    let image:String?
+    let images:[String]?
+    let types:[String]?
+    let abilities: [String]?
+    let moves: [String]?
     
-    init(id: Int? = nil, name: String? = nil, images: [PokemonSprite]? = [], types: [PKMPokemonType]? = [], abilities: [PKMPokemonAbility]? = [], moves: [PKMPokemonMove]? = []) {
+    init(id: Int? = nil, name: String? = nil, image:String?, images: [String]? = [], types: [String]? = [], abilities: [String]? = [], moves: [String]? = []) {
         self.id = id
         self.name = name
+        self.image = image
         self.images = images
         self.types = types
         self.abilities = abilities

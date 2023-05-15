@@ -9,21 +9,29 @@ import Foundation
 import SwiftUI
 import PokemonAPI
 import SDWebImageSwiftUI
+import CoreData
 
 struct PokemonListView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    
+//    @FetchRequest(
+//        sortDescriptors: [NSSortDescriptor(keyPath: \PokemonItem.name, ascending: true)],
+//        animation: .default)
+//    private var items: FetchedResults<PokemonItem>
+//
     
     @State var viewModel: PokemonListViewModel?
     @State var error: Error?
     @State var pageIndex = 0
     @State var pagedObject: PKMPagedObject<PKMPokemon>?
-    @State var list: [Pokemon]?
+    @State var offlineList: [PokemonItem]?
     @State private var showingSheet = false
     @State var loading:LoadingView? = LoadingView.shared
     var detailView: PokemonDetailView?
     @State private var searchText = ""
     @State var rowsPerPage:Int = 10
 
-    var searchResults: [PKMNamedAPIResource<PKMPokemon>]? {
+    var onlineSearchResults: [PKMNamedAPIResource<PKMPokemon>]? {
         if searchText.isEmpty {
             if let results = pagedObject?.results as? [PKMNamedAPIResource] {
                 return results
@@ -43,20 +51,42 @@ struct PokemonListView: View {
         }
     }
     
+    var offlineSearchResults: [PokemonItem]? {
+        if searchText.isEmpty {
+            if let results = offlineList {
+                return results
+            }
+            return []
+        } else {
+            if let results = offlineList {
+                return results.filter({
+                    if let name = $0.name?.lowercased(), let found = name.contains(searchText.lowercased()) as Bool? {
+                        return found
+                    }
+                    return false
+                })
+            }
+            
+            return []
+        }
+    }
+    
     var body: some View {
         ZStack {
             NavigationView {
                 ZStack {
                     mainContent
                         .task {
-                            viewModel = PokemonListViewModel()
+                            viewModel = PokemonListViewModel(viewContext:viewContext)
+                            viewModel?.checkConnection()
                             await fetchPokemon()
+                            
                         }.navigationBarHidden(false)
                         .navigationTitle("Pokemons")
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 
-            }.searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look for a Pokemon")
+            }.searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look for a Pokemon").disableAutocorrection(true)
 
             loading?.frame(
                 minWidth: 0,
@@ -73,56 +103,105 @@ struct PokemonListView: View {
         VStack {
             if let error = error {
                 Text("An error occurred: \(error.localizedDescription)")
-            } else if let pagedObject = pagedObject,
-                        let pokemonResults = pagedObject.results as? [PKMNamedAPIResource],
-                        let searchResults = searchResults {
-                menu
-                List {
-                    ForEach(searchResults.indices, id: \.self){ pok in
+            } else {
+                
+                if viewModel?.offlineMode ?? false {
+                    
+                    if let offlineSearchResults = offlineSearchResults?.sorted(by: { $0.id < $1.id }) {
                         
-                        let pokemon = searchResults[pok]
-                        let pokemonName = getPokemonName(pokemonName: pokemon.name ?? "", list: list)
-                        let image = getPokemonImage(pokemonName: pokemon.name ?? "")
-                        let images = getPokemonImages(pokemonName: pokemon.name ?? "")
-                        let types = getPokemonTypes(pokemonName: pokemon.name ?? "")
-                        let abilities = getPokemonAbilities(pokemonName: pokemon.name ?? "")
-                        let moves = getPokemonMoves(pokemonName: pokemon.name ?? "")
-                        
-                        Button {
-                            viewModel?.selectedName = pokemonName
-                            viewModel?.selectedImage = image
-                            viewModel?.selectedImages = images
-                            viewModel?.selectedTypes = types
-                            viewModel?.selectedAbilities = abilities
-                            viewModel?.selectedMoves = moves
-                            showingSheet.toggle()
-                        } label: {
-                                PokemonCardView(
-                                    name: pokemonName,
-                                    imageURLString: image,
-                                    images: images,
-                                    types: types,
-                                    abilities: abilities,
-                                    moves: moves,
-                                    isDetail: false
-                                ).padding(12)
+                        List {
+                            ForEach(offlineSearchResults.indices, id: \.self){ pok in
+                                let pokemon = offlineSearchResults[pok]
+                                Button {
+                                    self.setViewModelSelectedData(
+                                        selectedName: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                        selectedImage: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                        selectedImages: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                        selectedTypes: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                        selectedAbilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                        selectedMoves: getPokemonMoves(pokemonName: pokemon.name ?? "")
+                                    )
+                                    showingSheet.toggle()
+                                    
+                                } label: {
+                                    
+                                    PokemonCardView(
+                                        name: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                        imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                        images: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                        types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                        abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                        moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
+                                        isDetail: false
+                                    ).padding(12)
+                                
+                                }.sheet(isPresented: $showingSheet) {
+                                    
+                                    PokemonDetailView(
+                                        name: viewModel?.selectedName,
+                                        defaultImage: viewModel?.selectedImage,
+                                        images: viewModel?.selectedImages,
+                                        types: viewModel?.selectedTypes,
+                                        abilities: viewModel?.selectedAbilities,
+                                        moves: viewModel?.selectedMoves
+                                    )
+                                    
+                                }
+                                
+                            }
                             
-                        }.sheet(isPresented: $showingSheet) {
-                            
-                            PokemonDetailView(
-                                name: viewModel?.selectedName,
-                                defaultImage: viewModel?.selectedImage,
-                                images: viewModel?.selectedImages,
-                                types: viewModel?.selectedTypes,
-                                abilities: viewModel?.selectedAbilities,
-                                moves: viewModel?.selectedMoves
-                            )
                         }
-                        
+                        .listStyle(.automatic).textSelection(.disabled)
+                    }
+                    
+                } else {
+                    menu
+                    if let searchResults = onlineSearchResults {
+                        List {
+                            ForEach(searchResults.indices, id: \.self){ pok in
+                                let pokemon = searchResults[pok]
+                                Button {
+                                    self.setViewModelSelectedData(
+                                        selectedName: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                        selectedImage: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                        selectedImages: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                        selectedTypes: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                        selectedAbilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                        selectedMoves: getPokemonMoves(pokemonName: pokemon.name ?? "")
+                                    )
+                                    showingSheet.toggle()
+                                    
+                                } label: {
+                                    
+                                        PokemonCardView(
+                                            name: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                            imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                            images: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                            types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                            abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                            moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
+                                            isDetail: false
+                                        ).padding(12)
+                                    
+                                }.sheet(isPresented: $showingSheet) {
+                                    
+                                    PokemonDetailView(
+                                        name: viewModel?.selectedName,
+                                        defaultImage: viewModel?.selectedImage,
+                                        images: viewModel?.selectedImages,
+                                        types: viewModel?.selectedTypes,
+                                        abilities: viewModel?.selectedAbilities,
+                                        moves: viewModel?.selectedMoves
+                                    )
+                                }
+                                
+                            }
+                            
+                        }
+                        .listStyle(.automatic).textSelection(.disabled)
                     }
                     
                 }
-                .listStyle(.automatic).textSelection(.disabled)
             }
         }
     }
@@ -216,8 +295,8 @@ struct PokemonListView: View {
             let limit2 = 50
             let limit3 = 100
             let limit4 = 200
-            let limit5 = 500
-            let limit6 = 1000
+            let limit5 = 400
+            let limit6 = 800
             let label = "Limit "
             Text("\(label)\(limit0)").tag(limit0)
             Text("\(label)\(limit1)").tag(limit1)
@@ -241,8 +320,9 @@ struct PokemonListView: View {
         }
     }
     
-    
-    
+}
+
+extension PokemonListView {
     func fetchPokemon(paginationState: PaginationState<PKMPokemon>? = nil) async {
         loading = LoadingView()
         var pageLimit:PaginationState<PKMPokemon> = .initial(pageLimit: rowsPerPage )
@@ -251,15 +331,30 @@ struct PokemonListView: View {
             pageLimit = paginationState
         }
         
-        viewModel?.getPokemonListItems(paginationState: pageLimit) { (response, remotePagedObject) in
-            pagedObject = remotePagedObject
-            list = response
+        await viewModel?.getPokemonListItems(paginationState: pageLimit) { (responseOffline, responseOnline, remotePagedObject) in
+
+            if viewModel?.offlineMode ?? false{
+                offlineList = responseOffline
+            } else {
+                pagedObject = remotePagedObject
+            }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 loading = nil
             }
             
         }
+    }
+}
+
+extension PokemonListView {
+    func setViewModelSelectedData(selectedName:String, selectedImage:String, selectedImages:[String], selectedTypes:[String], selectedAbilities:[String], selectedMoves: [String]){
+        viewModel?.selectedName = selectedName
+        viewModel?.selectedImage = selectedImage
+        viewModel?.selectedImages = selectedImages
+        viewModel?.selectedTypes = selectedTypes
+        viewModel?.selectedAbilities = selectedAbilities
+        viewModel?.selectedMoves = selectedMoves
     }
     
 }
@@ -298,10 +393,11 @@ extension PokemonListView {
         pageIndex = pagedObject.currentPage-1
         
     }
-    
-    
-    private func getPokemonName(pokemonName:String, list: [Pokemon]?) -> String{
-        return viewModel?.getPokemonName(pokemonName: pokemonName, list: list).uppercased() ?? ""
+}
+
+extension PokemonListView {
+    private func getPokemonName(pokemonName:String) -> String{
+        return viewModel?.getPokemonName(pokemonName: pokemonName).uppercased() ?? ""
     }
     
     private func getPokemonImage(pokemonName:String) -> String{
@@ -312,24 +408,28 @@ extension PokemonListView {
         return viewModel?.getPokemonImagesURLs(pokemonName: pokemonName) ?? []
     }
     
-    private func getPokemonTypes(pokemonName:String) -> String{
-        return viewModel?.getPokemonTypesStrings(pokemonName: pokemonName) ?? ""
+    private func getPokemonTypes(pokemonName:String) -> [String]{
+        return viewModel?.getPokemonTypes(pokemonName: pokemonName) ?? []
+        //return viewModel?.getPokemonTypesStrings(pokemonName: pokemonName)
     }
     
-    private func getPokemonAbilities(pokemonName:String) -> String{
-        return viewModel?.getPokemonAbilitiesStrings(pokemonName: pokemonName) ?? ""
+    private func getPokemonAbilities(pokemonName:String) -> [String]{
+        return viewModel?.getPokemonAbilities(pokemonName: pokemonName) ?? []
+        //return viewModel?.getPokemonAbilitiesStrings(pokemonName: pokemonName)
     }
     
-    private func getPokemonMoves(pokemonName:String) -> String{
-        return viewModel?.getPokemonMovesStrings(pokemonName: pokemonName) ?? ""
+    private func getPokemonMoves(pokemonName:String) -> [String]{
+        return viewModel?.getPokemonMoves(pokemonName: pokemonName) ?? []
+        //return viewModel?.getPokemonMovesStrings(pokemonName: pokemonName)
     }
     
 }
 
+
 struct PokemonListView_Previews: PreviewProvider {
     static var previews: some View {
-        PokemonListView()
-            .environmentObject(PokemonListViewModel())
+        PokemonListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        //PokemonListView().environmentObject(PokemonListViewModel())
     }
 }
 

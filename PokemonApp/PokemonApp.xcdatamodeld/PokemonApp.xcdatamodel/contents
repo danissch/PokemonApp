@@ -3,5 +3,21 @@
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="PokemonItem" representedClassName="PokemonItem" syncable="YES" codeGenerationType="class"/>
+    <entity name="LocalPagedObject" representedClassName="LocalPagedObject" syncable="YES" codeGenerationType="class">
+        <attribute name="current" optional="YES" attributeType="String"/>
+        <attribute name="currentPage" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="hasNext" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="hasPrevious" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="pages" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="results" optional="YES" attributeType="Transformable" customClassName="[PokemonItem]"/>
+    </entity>
+    <entity name="PokemonItem" representedClassName="PokemonItem" syncable="YES" codeGenerationType="class">
+        <attribute name="abilities" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="image" optional="YES" attributeType="String"/>
+        <attribute name="images" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="moves" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="types" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+    </entity>
 </model>

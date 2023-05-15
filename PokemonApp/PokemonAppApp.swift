@@ -14,10 +14,11 @@ struct PokemonAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            let pokemonAPI = PokemonAPI()
+            //let pokemonAPI = PokemonAPI()
             //ContentView()
                 //.environment(\.managedObjectContext, persistenceController.container.viewContext)
-            PokemonListView().environmentObject(pokemonAPI)
+            //PokemonListView().environmentObject(pokemonAPI)
+            PokemonListView().environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

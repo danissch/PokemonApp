@@ -14,9 +14,9 @@ struct PokemonDetailView: View {
     @State var name:String?
     @State var defaultImage:String?
     @State var images:[String]?
-    @State var types:String?
-    @State var abilities:String?
-    @State var moves:String?
+    @State var types:[String]?
+    @State var abilities:[String]?
+    @State var moves:[String]?
     
     @State var viewModel: PokemonDetailViewModel?
 
@@ -72,16 +72,16 @@ extension PokemonDetailView {
         return images ?? []
     }
     
-    func getTypes() -> String {
-        return types ?? "No types"
+    func getTypes() -> [String] {
+        return types ?? ["No types"]
     }
     
-    func getAbilities() -> String {
-        return abilities ?? "No abilities"
+    func getAbilities() -> [String] {
+        return abilities ?? ["No abilities"]
     }
     
-    func getMoves() -> String {
-        return moves ?? "No moves"
+    func getMoves() -> [String] {
+        return moves ?? ["No moves"]
     }
     
 }
@@ -89,7 +89,7 @@ extension PokemonDetailView {
 struct PokemonDetailView_Previews: PreviewProvider {
     static var previews: some View {
         PokemonDetailView()
-            .environmentObject(PokemonListViewModel())
+            //.environmentObject(PokemonListViewModel())
     }
 }
 

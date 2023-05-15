@@ -10,11 +10,7 @@ import PokemonAPI
 import SwiftUI
 
 struct PokemonViewModelslHelper {
-    
-    static func setImageURLString(view: PokemonCardView, url:String){
-//        view.
-    }
-    
+ 
     static  func extractPokemonID(pokemon:PKMNamedAPIResource<PKMPokemon>) -> Int{
         let urlArray = pokemon.url?.components(separatedBy: "/")
         var id = 0
@@ -69,6 +65,101 @@ struct PokemonViewModelslHelper {
         
         return images
     }
+    
+    static func getPokemonSpritesStrings(item: PKMPokemon?) -> [String] {
+        
+        var images:[String] = []
+        
+        if let frontDefault = item?.sprites?.frontDefault, frontDefault != "" {
+            images.append(frontDefault)
+        }
+        if let frontFemale = item?.sprites?.frontFemale, frontFemale != ""{
+            images.append(frontFemale)
+        }
+        if let frontShiny = item?.sprites?.frontShiny, frontShiny != "" {
+            images.append(frontShiny)
+        }
+        if let backDefault = item?.sprites?.backDefault, backDefault != "" {
+            images.append(backDefault)
+        }
+        if let backFemale = item?.sprites?.backFemale, backFemale != "" {
+            images.append(backFemale)
+        }
+        if let backShiny = item?.sprites?.backShiny, backShiny != "" {
+            images.append(backShiny)
+        }
+        if let backShinyFemale = item?.sprites?.backShinyFemale, backShinyFemale != "" {
+            images.append(backShinyFemale)
+        }
+        if let frontShinyFemale = item?.sprites?.frontShinyFemale, frontShinyFemale != "" {
+            images.append(frontShinyFemale)
+        }
+        
+        return images
+    }
+    
+    
+    static func getPokemonTypes(item: PKMPokemon?) -> [String]{
+        var types:[String] = []
+        
+        for type in item?.types ?? [] {
+            if let name = type.type?.name {
+                types.append(name)
+            }
+        }
+        
+        return types
+    }
+    
+    static func getPokemonAbilities(item: PKMPokemon?) -> [String] {
+        var abilities:[String] = []
+        for ability in item?.abilities ?? [] {
+            if let name = ability.ability?.name {
+                abilities.append(name)
+            }
+        }
+        return abilities
+    }
+    
+    static func getPokemonMoves(item: PKMPokemon?) -> [String] {
+        var moves: [String] = []
+        for move in item?.moves ?? []{
+            if let name = move.move?.name {
+                moves.append(name)
+            }
+        }
+        return moves
+    }
+    
+    
+    static func convertArrayPokemonItemToPokemonArray(array:[PokemonItem]) -> [Pokemon]{
+        var pokemonArray:[Pokemon] = []
+    
+        for data in array {
+            let id = data.id
+            let name = data.name
+            let image = data.image
+            let images = data.images
+            let types = data.types
+            let abilities = data.abilities
+            let moves = data.moves
+            print("appflow::: getItems: for: id: \(id)")
+            print("appflow::: getItems: for: name: \(name)")
+            print("appflow::: getItems: for: image: \(image)")
+            print("appflow::: getItems: for: images: \(images)")
+            print("appflow::: getItems: for: types: \(types)")
+            print("appflow::: getItems: for: abilities: \(abilities)")
+            print("appflow::: getItems: for: moves: \(moves)")
+        }
+    
+        
+        return []
+    }
+    
+//    static func convertFromPokemonItemToPokemon(item:PokemonItem) -> Pokemon{
+//        return Pokemon(id:Int(item.id), name: item.name, imag)
+//    }
+    
     
     
 }
