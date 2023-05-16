@@ -12,4 +12,20 @@ import XCTest
 
 class APIServiceTests:XCTestCase {
     
+    var sut: APIService?
+    
+    
+    override func setUp() {
+        super.setUp()
+        sut = APIService()
+    }
+    
+    override func tearDown() {
+        sut = nil
+        super.tearDown()
+    }
+    
+    
+    
+    
 }
