@@ -87,8 +87,6 @@ struct PokemonCardView: View {
                 
                 Text(name ?? "Unknown Pokemon").fontWeight(.heavy)
                 
-                //Here was the gallery
-                
                 VStack {
                 
                     Text("Types").bold().frame(minWidth: 0, maxWidth: .infinity, minHeight: 20, alignment: .leading)
@@ -125,8 +123,7 @@ struct PokemonCardView: View {
                                     .background(.mint.opacity(0.15))
                                     .border(.white)
                                     .cornerRadius(7)
-                                    
-                                    
+                                           
                             }
                         }
                         
@@ -135,10 +132,8 @@ struct PokemonCardView: View {
                 }.padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                 
             } else {
-                //loading
                 WebImage(url: URL(string: imageURLString ?? "" ))
                     .onSuccess { image, data, cacheType in
-                        //loading = nil
                     }.placeholder {
                         Rectangle().foregroundColor(.clear)
                     }.indicator(.activity).transition(.fade(duration: 0.5)).aspectRatio(.pi, contentMode: .fill)
@@ -156,10 +151,6 @@ struct PokemonCardView: View {
                     Text("Types:")
                     HStack {
                         ForEach(types, id: \.self){ type in
-                            //let newIndex = types.count == 1 ? 0 : index
-                            //if types.count == 1 {
-                                
-                            //} else if types.count == 0
                             Text("\(type)")
                         }
                     }

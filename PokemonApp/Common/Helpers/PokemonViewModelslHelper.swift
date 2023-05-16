@@ -21,12 +21,6 @@ struct PokemonViewModelslHelper {
         return id
     }
     
-    static func getPokemon(apiService:APIServiceProtocol = APIService(), id:Int, completion: @escaping (PKMPokemon?) -> () ) {
-        apiService.fetchData(pokemonID: id) { result in
-            completion(result)
-        }
-    }
-    
     static func getPokemonSprites(item: PKMPokemon?) -> [PokemonSprite] {
         let images:[PokemonSprite] = [
             PokemonSprite(
@@ -143,23 +137,10 @@ struct PokemonViewModelslHelper {
             let types = data.types
             let abilities = data.abilities
             let moves = data.moves
-            print("appflow::: getItems: for: id: \(id)")
-            print("appflow::: getItems: for: name: \(name)")
-            print("appflow::: getItems: for: image: \(image)")
-            print("appflow::: getItems: for: images: \(images)")
-            print("appflow::: getItems: for: types: \(types)")
-            print("appflow::: getItems: for: abilities: \(abilities)")
-            print("appflow::: getItems: for: moves: \(moves)")
         }
     
         
         return []
     }
-    
-//    static func convertFromPokemonItemToPokemon(item:PokemonItem) -> Pokemon{
-//        return Pokemon(id:Int(item.id), name: item.name, imag)
-//    }
-    
-    
     
 }

@@ -7,9 +7,12 @@
 
 import Foundation
 
-import Foundation
 import PokemonAPI
 
-extension PokemonAPI:ObservableObject {
-    
+
+extension PokemonAPI:ObservableObject, ProtocolPokemonAPI {
+
 }
+
+
+

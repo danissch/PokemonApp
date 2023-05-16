@@ -27,10 +27,6 @@ struct Pokemon {
         self.moves = moves
     }
 
-//    override init() {
-//        super.init()
-//    }
-    
 }
 
 struct PokemonSprite {

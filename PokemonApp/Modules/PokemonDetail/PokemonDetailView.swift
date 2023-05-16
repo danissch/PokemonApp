@@ -17,15 +17,11 @@ struct PokemonDetailView: View {
     @State var types:[String]?
     @State var abilities:[String]?
     @State var moves:[String]?
-    
-    @State var viewModel: PokemonDetailViewModel?
 
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-            mainContent.task {
-                viewModel = PokemonDetailViewModel()
-            }
+            mainContent
             .navigationBarTitle("\(self.getName() )")
             .navigationBarBackButtonHidden(false)
     }
@@ -56,7 +52,6 @@ struct PokemonDetailView: View {
             }
         }
     }
-    
 }
 
 extension PokemonDetailView {
@@ -89,7 +84,6 @@ extension PokemonDetailView {
 struct PokemonDetailView_Previews: PreviewProvider {
     static var previews: some View {
         PokemonDetailView()
-            //.environmentObject(PokemonListViewModel())
     }
 }
 

@@ -15,11 +15,9 @@ struct ScrollGalleryView: View {
     let action:((String?) -> ())?
     
     var body: some View {
-        //Text("Gallery").background(.)
         content.task {
             //
         }
-        
     }
     
     var content: some View {

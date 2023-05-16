@@ -10,17 +10,15 @@ import PokemonAPI
 import CoreData
 import SwiftUI
 
+protocol PokemonListViewModelProtocol {
+    func processStarted()
+    func processFinish()
+}
 
 class PokemonListViewModel: ObservableObject {
     
-    //@Environment(\.managedObjectContext) private var viewContext
     private var viewContext: NSManagedObjectContext
     
-//    @FetchRequest(
-//        sortDescriptors: [NSSortDescriptor(keyPath: \PokemonItem.name, ascending: true)],
-//        animation: .default)
-    
-    //var items: [PokemonItem] = []
     var localPagedObject: LocalPagedObject?
     
     @Published var onlineList:[Pokemon]? = []
@@ -29,7 +27,6 @@ class PokemonListViewModel: ObservableObject {
     
     var pagedObject: PKMPagedObject<PKMPokemon>?
     
-    //var error: Error?
     
     let apiService: APIServiceProtocol
     
@@ -42,10 +39,12 @@ class PokemonListViewModel: ObservableObject {
     @Published var selectedAbilities:[String]?
     @Published var selectedMoves:[String]?
     
+    var delegate: PokemonListViewModelProtocol?
     
-    init(apiService: APIServiceProtocol = APIService(), viewContext: NSManagedObjectContext = PersistenceController.preview.container.viewContext) {
+    init(apiService: APIServiceProtocol = APIService(), viewContext: NSManagedObjectContext = PersistenceController.preview.container.viewContext, delegate: PokemonListViewModelProtocol? ) {
         self.apiService = apiService
         self.viewContext = viewContext
+        self.delegate = delegate
     }
     
 }
@@ -111,39 +110,6 @@ extension PokemonListViewModel {
         }
     }
     
-//    func getPokemonTypesStrings(pokemonName:String) -> [String] {
-//        var typesStrings = ""
-//        let types = getPokemonTypes(pokemonName: pokemonName)
-//
-//        for type in types ?? [] {
-//            typesStrings += "\(type)"
-//        }
-//
-//        return typesStrings
-//    }
-//
-//    func getPokemonAbilitiesStrings(pokemonName:String) -> String {
-//        var abilitiesStrings = ""
-//        let abilities = getPokemonAbilities(pokemonName: pokemonName)
-//
-//        for ability in abilities ?? [] {
-//            abilitiesStrings += "\(ability)"
-//        }
-//
-//        return abilitiesStrings
-//    }
-//
-//    func getPokemonMovesStrings(pokemonName:String) -> String {
-//        var movesStrings = ""
-//        let moves = getPokemonMoves(pokemonName: pokemonName)
-//
-//        for move in moves ?? [] {
-//            movesStrings += "\(move)"
-//        }
-//
-//        return movesStrings
-//    }
-    
 }
 
 extension PokemonListViewModel {
@@ -174,9 +140,13 @@ extension PokemonListViewModel {
         if let pagedObject = pagedObject,
                 let pokemonResults = pagedObject.results as? [PKMNamedAPIResource] {
             offlineList?.removeAll()
+            onlineList?.removeAll()
+            
+            delegate?.processStarted()
             for pokemon in pokemonResults {
                 let id = PokemonViewModelslHelper.extractPokemonID(pokemon: pokemon)
-                PokemonViewModelslHelper.getPokemon(apiService: self.apiService, id: id) { item in
+                
+                apiService.fetchData(pokemonID: id) { item in
                     self.fillData(item: item, completion: completion)
                 }
                 
@@ -203,7 +173,7 @@ extension PokemonListViewModel {
         ) {
             self.offlineList?.append(itemForList)
             
-        } else {
+        }
             
             self.onlineList?.append(
                 Pokemon(
@@ -216,12 +186,12 @@ extension PokemonListViewModel {
                     moves: moves
                 )
             )
-        }
-
-        print("appflow:: extract_pokemonList:B:items.count: \(self.offlineList?.count)")
         
         self.offlineList = self.offlineList?.sorted(by: {$0.id < $1.id})
         completion(self.offlineList, self.onlineList, self.pagedObject)
+        if !offlineMode, onlineList?.count == pagedObject?.results?.count {
+            self.delegate?.processFinish()
+        }
     }
 
 }
@@ -233,7 +203,7 @@ extension PokemonListViewModel {
         do {
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: "PokemonItem")
             request.predicate = NSPredicate(format: "id == %d AND name == %@", id, name)
-            let record = try viewContext.fetch(request)
+            
             let numberOfRecords = try viewContext.count(for: request)
             
             if numberOfRecords == 0 {
@@ -250,34 +220,17 @@ extension PokemonListViewModel {
     }
     
     func fetchFromLocalStorage(paginationState: PaginationState<PKMPokemon>, completion: @escaping ([PokemonItem]?, [Pokemon]?, PKMPagedObject<PKMPokemon>?) -> ()){
+        delegate?.processStarted()
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "PokemonItem")
-        //request.predicate = NSPredicate(format: "age = %@", "12")
         request.returnsObjectsAsFaults = false
         
         do {
             let result = try viewContext.fetch(request)
             if let result = result as? [PokemonItem] {
-                //self.items = result
-                for data in result {
-                    let id = data.id
-                    let name = data.name
-                    let image = data.image
-                    let images = data.images
-                    let types = data.types
-                    let abilities = data.abilities
-                    let moves = data.moves
-                    print("appflow::: getItems: for: id: \(id)")
-                    print("appflow::: getItems: for: name: \(name)")
-                    print("appflow::: getItems: for: image: \(image)")
-                    print("appflow::: getItems: for: images: \(images)")
-                    print("appflow::: getItems: for: types: \(types)")
-                    print("appflow::: getItems: for: abilities: \(abilities)")
-                    print("appflow::: getItems: for: moves: \(moves)")
-                }
                 self.offlineList = result
                 completion(result, nil, nil)
+                delegate?.processFinish()
             }
-            
             
         } catch {
             print("Failed")
@@ -304,9 +257,6 @@ extension PokemonListViewModel {
             }
             
         } catch {
-            print("appflow:: addItem:B:")
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             return nil
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")

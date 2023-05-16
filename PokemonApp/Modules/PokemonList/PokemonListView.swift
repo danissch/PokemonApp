@@ -14,12 +14,6 @@ import CoreData
 struct PokemonListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-//    @FetchRequest(
-//        sortDescriptors: [NSSortDescriptor(keyPath: \PokemonItem.name, ascending: true)],
-//        animation: .default)
-//    private var items: FetchedResults<PokemonItem>
-//
-    
     @State var viewModel: PokemonListViewModel?
     @State var error: Error?
     @State var pageIndex = 0
@@ -77,8 +71,7 @@ struct PokemonListView: View {
                 ZStack {
                     mainContent
                         .task {
-                            viewModel = PokemonListViewModel(viewContext:viewContext)
-                            viewModel?.checkConnection()
+                            viewModel = PokemonListViewModel(viewContext:viewContext, delegate: self)
                             await fetchPokemon()
                             
                         }.navigationBarHidden(false)
@@ -86,7 +79,9 @@ struct PokemonListView: View {
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 
-            }.searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look on this page").disableAutocorrection(true)
+            }
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look on this page")
+            .disableAutocorrection(true)
 
             loading?.frame(
                 minWidth: 0,
@@ -149,15 +144,6 @@ struct PokemonListView: View {
                                         moves: viewModel?.selectedMoves
                                     )
                                     
-                                }.onAppear {
-                                    /*
-                                    if (offlineSearchResults.last?.name == pokemon.name){
-                                        guard let pagedObject = pagedObject else { return }
-                                        Task {
-                                            await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
-                                        }
-                                    }
-                                    */
                                 }
                                 
                             }
@@ -172,7 +158,9 @@ struct PokemonListView: View {
                     }
                     
                 } else {
+                    
                     menu
+                    
                     if let searchResults = onlineSearchResults {
                         List {
                             ForEach(searchResults.indices, id: \.self){ pok in
@@ -213,25 +201,20 @@ struct PokemonListView: View {
                                         abilities: viewModel?.selectedAbilities,
                                         moves: viewModel?.selectedMoves
                                     )
-                                }.onAppear {
-                                    if searchResults.last?.name == pokemon.name, rowsPerPage > 20 {
-                                        guard let pagedObject = pagedObject else { return }
-                                        Task {
-                                            await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
-                                        }
-                                    }
                                 }
                             }
                             
-                        }.refreshable(action: {
-                            guard let pagedObject = pagedObject else { return }
-                            Task {
-                                await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                        }
+                        .refreshable(action: {
+                            if !showingSheet {
+                                guard let pagedObject = pagedObject else { return }
+                                Task {
+                                    await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                                }
                             }
                         })
                         .listStyle(.automatic).textSelection(.disabled)
                     }
-                    
                 }
             }
         }
@@ -268,9 +251,8 @@ struct PokemonListView: View {
             //Spacer()
             
             rowsPerPagePicker
-                .frame(width: 40, height: 50)
+                .frame(width: 100, height: 50)
                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                //.disabled(searchResults?.count ?? 0 <= rowsPerPage-1)
             
             Spacer()
             
@@ -326,16 +308,18 @@ struct PokemonListView: View {
             let limit2 = 50
             let limit3 = 100
             let limit4 = 200
-            //let limit5 = 400
-            //let limit6 = 800
+            let limit5 = 400
+            let limit6 = 800
+            let limit7 = 2000
             let label = "Limit "
             Text("\(label)\(limit0)").tag(limit0)
             Text("\(label)\(limit1)").tag(limit1)
             Text("\(label)\(limit2)").tag(limit2)
             Text("\(label)\(limit3)").tag(limit3)
             Text("\(label)\(limit4)").tag(limit4)
-            //Text("\(label)\(limit5)").tag(limit5)
-            //Text("\(label)\(limit6)").tag(limit6)
+            Text("\(label)\(limit5)").tag(limit5)
+            Text("\(label)\(limit6)").tag(limit6)
+            Text("\(label)\(limit7)").tag(limit7)
         }
         
         #if os(macOS)
@@ -344,10 +328,9 @@ struct PokemonListView: View {
         
         .onChange(of: rowsPerPage) { index in
             rowsPerPage = index
+            pageIndex = 0
             Task {
-                loading = LoadingView()
                 await fetchPokemon()
-                pageIndex = 0
             }
         }
     }
@@ -356,7 +339,7 @@ struct PokemonListView: View {
 
 extension PokemonListView {
     func fetchPokemon(paginationState: PaginationState<PKMPokemon>? = nil) async {
-        loading = LoadingView()
+        viewModel?.checkConnection()
         var pageLimit:PaginationState<PKMPokemon> = .initial(pageLimit: rowsPerPage )
         
         if let paginationState = paginationState {
@@ -364,17 +347,11 @@ extension PokemonListView {
         }
         
         await viewModel?.getPokemonListItems(paginationState: pageLimit) { (responseOffline, responseOnline, remotePagedObject) in
-
             if viewModel?.offlineMode ?? false{
                 offlineList = responseOffline
             } else {
                 pagedObject = remotePagedObject
             }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                loading = nil
-            }
-            
         }
     }
 }
@@ -389,6 +366,18 @@ extension PokemonListView {
         viewModel?.selectedMoves = selectedMoves
     }
     
+}
+
+extension PokemonListView: PokemonListViewModelProtocol {
+    func processStarted(){
+        loading = LoadingView()
+    }
+    
+    func processFinish(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            loading = nil
+        }
+    }
 }
 
 extension PokemonListView {
@@ -442,26 +431,24 @@ extension PokemonListView {
     
     private func getPokemonTypes(pokemonName:String) -> [String]{
         return viewModel?.getPokemonTypes(pokemonName: pokemonName) ?? []
-        //return viewModel?.getPokemonTypesStrings(pokemonName: pokemonName)
     }
     
     private func getPokemonAbilities(pokemonName:String) -> [String]{
         return viewModel?.getPokemonAbilities(pokemonName: pokemonName) ?? []
-        //return viewModel?.getPokemonAbilitiesStrings(pokemonName: pokemonName)
     }
     
     private func getPokemonMoves(pokemonName:String) -> [String]{
         return viewModel?.getPokemonMoves(pokemonName: pokemonName) ?? []
-        //return viewModel?.getPokemonMovesStrings(pokemonName: pokemonName)
     }
     
 }
 
 
+
+
 struct PokemonListView_Previews: PreviewProvider {
     static var previews: some View {
         PokemonListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-        //PokemonListView().environmentObject(PokemonListViewModel())
     }
 }
 

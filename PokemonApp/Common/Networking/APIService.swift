@@ -7,9 +7,10 @@
 
 import Foundation
 import PokemonAPI
-//import SwiftUI
 
-final class APIService:APIServiceProtocol {
+final class APIService: APIServiceProtocol {
+    //var pokemonAPI: PokemonAPI.PokemonAPI?
+    
     
     var pokemonAPI: PokemonAPI?
     var error: Error?
@@ -20,19 +21,20 @@ final class APIService:APIServiceProtocol {
     }
     
     func fetchData(paginationState:PaginationState<PKMPokemon>, completion: @escaping (PKMPagedObject<PKMPokemon>?) -> Void) {
+        
         pokemonAPI?.pokemonService.fetchPokemonList(paginationState:paginationState, completion: { result in
             switch result {
             case .success(let success):
-                //print("appflow::: success", success)
                 completion(success)
+                break
             
-                
             case .failure(let failure):
-                print("appflow::: failure", failure)
+                print("fetchData A failure", failure)
                 self.error = failure
                 completion(nil)
-                
+                break
             }
+            
         })
     }
     
@@ -42,13 +44,13 @@ final class APIService:APIServiceProtocol {
         pokemonAPI?.pokemonService.fetchPokemon(id, completion: { result in
             switch result {
             case .success(let success):
-                //print("appflow::: success", success)
                 completion(success)
-            
+                break
             case .failure(let failure):
-                print("appflow::: failure", failure)
+                print("fetchData B failure:", failure)
                 self.error = failure
                 completion(nil)
+                break
                 
             }
         })

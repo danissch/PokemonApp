@@ -1,0 +1,20 @@
+{
+    "count":10,
+    "next": "",
+    "previous":""
+    "current":""
+    "result":[
+        {"name":"bulbasaur"},
+        {"name":"ivysaur"},
+        {"name":"venusaur"},
+        {"name":"charmander"},
+        {"name":"charmeleon"},
+        {"name":"charizard"},
+        {"name":"squirtle"},
+        {"name":"wartortle"},
+        {"name":"blastoise"},
+        {"name":"caterpie"}
+    ],
+    "limit", 10,
+    "offset":0
+}
