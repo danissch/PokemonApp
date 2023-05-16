@@ -29,7 +29,7 @@ class APIServiceTests:XCTestCase {
         let expect = XCTestExpectation(description: "callback")
         let paginationState:PaginationState<PKMPokemon> = StubGenerator().stubPaginatedStateObject()
 
-        sut?.fetchData(paginationState: paginationState, completion: { pagedObject in
+        sut?.fetchData(paginationState: paginationState, completion: { pagedObject, error  in
             expect.fulfill()
             if let results = pagedObject?.results {
                 XCTAssertEqual(results.count, 10)
@@ -42,7 +42,7 @@ class APIServiceTests:XCTestCase {
     
     func test_fetchData_onePokemon(){
         let expect = XCTestExpectation(description: "callback")
-        sut?.fetchData(pokemonID: 1, completion: { pokemon in
+        sut?.fetchData(pokemonID: 1, completion: { pokemon, error  in
             expect.fulfill()
             XCTAssertNotNil(pokemon?.name)
             XCTAssertEqual(pokemon?.id, 1)
@@ -52,7 +52,7 @@ class APIServiceTests:XCTestCase {
     func test_fetchData_pokemonService_SuccessResponse(){
         let expect = XCTestExpectation(description: "callback")
         let paginationState:PaginationState<PKMPokemon> = StubGenerator().stubPaginatedStateObject()
-        sut?.fetchData(paginationState: paginationState, completion: { pagedObject in
+        sut?.fetchData(paginationState: paginationState, completion: { pagedObject, error  in
             self.sut?.pokemonAPI?.pokemonService.fetchPokemonList(paginationState:paginationState, completion: { result in
                 switch result {
                 case .success(let success):
@@ -72,13 +72,34 @@ class APIServiceTests:XCTestCase {
     
     func test_fetchPokemonListDataCountIsAccording(){
         let paginationState:PaginationState<PKMPokemon> = StubGenerator().stubPaginatedStateObject()
-        sut?.fetchData(paginationState: paginationState, completion: { pagedObject in
+        sut?.fetchData(paginationState: paginationState, completion: { pagedObject, error  in
             let url = URL(string:self.sut?.pagedObject?.current ?? "")
             if let limit = url?.valueOf("limit") as? String {
                 XCTAssertEqual(Int(limit), self.sut?.pagedObject?.results?.count)
             }
         })
     }
+    
+//    func test_failureCase(){
+//        let expect = XCTestExpectation(description: "callback")
+//        let paginationState:PaginationState<PKMPokemon> = StubGenerator().stubPaginatedStateObject()
+//
+//        sut?.fetchData(paginationState: paginationState, completion: { pagedObject, error  in
+//            self.sut?.pokemonAPI?.pokemonService.fetchPokemonList(paginationState:paginationState, completion: { result in
+//                let result = StubGenerator().stubResultFailurePagedObjectPokemons()
+//                switch result {
+//                case .success(_):
+//                    break
+//                case .failure(let failure):
+//                    expect.fulfill()
+//                    XCTAssertEqual(failure.localizedDescription, HTTPError.httpError.errorDescription)
+//                    //print("appflow:: This is the error: \(failure.localizedDescription)")
+//                    //XCTAssertNotNil(failure)
+//                    break
+//                }
+//            })
+//        })
+//    }
     
 }
 

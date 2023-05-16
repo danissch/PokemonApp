@@ -20,6 +20,22 @@ class StubGenerator {
         )
     }
     
+    func stubResultFailurePagedObjectPokemons<T>(completion: @escaping (Result<PKMPagedObject<T>, Error>) -> Void) where T : Codable {
+        let error = stubNetworkError()
+        completion(.failure(error))
+    }
+    
+    func stubResultFailurePagedObjectPokemons() -> Result<PKMPagedObject<PKMPokemon>, Error> {
+        let error = stubNetworkError()
+        return .failure(error)
+    }
+    
+    
+    func stubNetworkError() -> Error{
+        var error = HTTPError.httpError
+        return error
+    }
+    
     func stubPagedObject<T>() -> PKMPagedObject<T>{
         var pagedObject:PKMPagedObject<T>?
         
@@ -37,4 +53,8 @@ class StubGenerator {
         
         return pagedObject!
     }
+}
+
+extension NSError {
+    
 }

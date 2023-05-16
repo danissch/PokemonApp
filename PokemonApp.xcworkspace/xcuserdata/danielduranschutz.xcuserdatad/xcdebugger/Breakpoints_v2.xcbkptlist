@@ -7,15 +7,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "00D19B40-937B-46DE-A8C9-B2F28EB9CED9"
-            shouldBeEnabled = "No"
+            uuid = "AD77634C-8932-4EAB-95D4-096A3BFAB028"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PokemonApp/Modules/PokemonList/PokemonListViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "fetchFromAPI(paginationState:completion:)"
             landmarkType = "7">
          </BreakpointContent>

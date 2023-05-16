@@ -30,6 +30,7 @@
 		838027642A13B92C007CA2B7 /* StubGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 838027632A13B92C007CA2B7 /* StubGenerator.swift */; };
 		838027702A13DCDF007CA2B7 /* MockPagedObject.json in Resources */ = {isa = PBXBuildFile; fileRef = 8380276F2A13DCDF007CA2B7 /* MockPagedObject.json */; };
 		838027752A13FFB5007CA2B7 /* ProtocolPokemonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 838027742A13FFB5007CA2B7 /* ProtocolPokemonAPI.swift */; };
+		8380277F2A1437EE007CA2B7 /* MockPokemonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8380277E2A1437ED007CA2B7 /* MockPokemonAPI.swift */; };
 		83ED52E22A0B2F0200F01E7A /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83ED52E12A0B2F0100F01E7A /* ActivityIndicator.swift */; };
 		83ED52E42A0B326B00F01E7A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83ED52E32A0B326B00F01E7A /* LoadingView.swift */; };
 		83F8ACE52A11971D009C2480 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F8ACE42A11971D009C2480 /* Reachability.swift */; };
@@ -85,6 +86,7 @@
 		838027632A13B92C007CA2B7 /* StubGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubGenerator.swift; sourceTree = "<group>"; };
 		8380276F2A13DCDF007CA2B7 /* MockPagedObject.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MockPagedObject.json; sourceTree = "<group>"; };
 		838027742A13FFB5007CA2B7 /* ProtocolPokemonAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolPokemonAPI.swift; sourceTree = "<group>"; };
+		8380277E2A1437ED007CA2B7 /* MockPokemonAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPokemonAPI.swift; sourceTree = "<group>"; };
 		83ED52E12A0B2F0100F01E7A /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		83ED52E32A0B326B00F01E7A /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		83F8ACE42A11971D009C2480 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 				8380275F2A130A3C007CA2B7 /* APIServiceTests.swift */,
 				838027632A13B92C007CA2B7 /* StubGenerator.swift */,
 				8380276F2A13DCDF007CA2B7 /* MockPagedObject.json */,
+				8380277E2A1437ED007CA2B7 /* MockPokemonAPI.swift */,
 			);
 			path = PokemonAppTests;
 			sourceTree = "<group>";
@@ -564,6 +567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8380277F2A1437EE007CA2B7 /* MockPokemonAPI.swift in Sources */,
 				838027602A130A3C007CA2B7 /* APIServiceTests.swift in Sources */,
 				838027642A13B92C007CA2B7 /* StubGenerator.swift in Sources */,
 				837ABAFB2A080D3500FD4B04 /* PokemonAppTests.swift in Sources */,

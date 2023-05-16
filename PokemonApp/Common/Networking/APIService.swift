@@ -20,36 +20,34 @@ final class APIService: APIServiceProtocol {
         self.pokemonAPI = pokemonAPI
     }
     
-    func fetchData(paginationState:PaginationState<PKMPokemon>, completion: @escaping (PKMPagedObject<PKMPokemon>?) -> Void) {
+    func fetchData(paginationState:PaginationState<PKMPokemon>, completion: @escaping (PKMPagedObject<PKMPokemon>?, Error?) -> Void) {
         
         pokemonAPI?.pokemonService.fetchPokemonList(paginationState:paginationState, completion: { result in
             switch result {
             case .success(let success):
-                completion(success)
+                completion(success, nil)
                 break
             
             case .failure(let failure):
-                print("fetchData A failure", failure)
                 self.error = failure
-                completion(nil)
+                completion(nil, self.error)
                 break
             }
             
         })
     }
     
-    func fetchData(pokemonID:Int? = nil, completion: @escaping (PKMPokemon?) -> Void) {
+    func fetchData(pokemonID:Int? = nil, completion: @escaping (PKMPokemon?, Error?) -> Void) {
         
         guard let id = pokemonID else { return }
         pokemonAPI?.pokemonService.fetchPokemon(id, completion: { result in
             switch result {
             case .success(let success):
-                completion(success)
+                completion(success, nil)
                 break
             case .failure(let failure):
-                print("fetchData B failure:", failure)
                 self.error = failure
-                completion(nil)
+                completion(nil, self.error)
                 break
                 
             }

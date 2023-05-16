@@ -24,7 +24,8 @@ struct PokemonListView: View {
     var detailView: PokemonDetailView?
     @State private var searchText = ""
     @State var rowsPerPage:Int = 10
-
+    @State private var showingAlert = false
+    
     var onlineSearchResults: [PKMNamedAPIResource<PKMPokemon>]? {
         if searchText.isEmpty {
             if let results = pagedObject?.results as? [PKMNamedAPIResource] {
@@ -81,7 +82,11 @@ struct PokemonListView: View {
                 
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look on this page")
-            .disableAutocorrection(true)
+            .disableAutocorrection(true).alert("Error: \(error?.localizedDescription ?? "Unknowed error...")", isPresented: $showingAlert) {
+                Button("OK", role: .cancel) {
+
+                }
+            }
 
             loading?.frame(
                 minWidth: 0,
@@ -376,6 +381,13 @@ extension PokemonListView: PokemonListViewModelProtocol {
     func processFinish(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             loading = nil
+        }
+    }
+    
+    func onError(error: Error?){
+        if error != nil {
+            self.error = error
+            showingAlert = true
         }
     }
 }

@@ -13,6 +13,7 @@ import SwiftUI
 protocol PokemonListViewModelProtocol {
     func processStarted()
     func processFinish()
+    func onError(error:Error?)
 }
 
 class PokemonListViewModel: ObservableObject {
@@ -127,7 +128,13 @@ extension PokemonListViewModel {
     }
     
     private func fetchFromAPI(paginationState: PaginationState<PKMPokemon>, completion: @escaping ([PokemonItem]?, [Pokemon]?, PKMPagedObject<PKMPokemon>?) -> ()){
-        self.apiService.fetchData(paginationState: paginationState) { result in
+        self.apiService.fetchData(paginationState: paginationState) { result, error  in
+            if error != nil {
+                self.delegate?.processFinish()
+                self.delegate?.onError(error: error)
+                return
+            }
+            
             if let response = result {
                 self.pagedObject = response
                 self.extract_pokemonList(completion: completion)
@@ -146,7 +153,12 @@ extension PokemonListViewModel {
             for pokemon in pokemonResults {
                 let id = PokemonViewModelslHelper.extractPokemonID(pokemon: pokemon)
                 
-                apiService.fetchData(pokemonID: id) { item in
+                apiService.fetchData(pokemonID: id) { item, error in
+                    if error != nil {
+                        self.delegate?.processFinish()
+                        self.delegate?.onError(error: error)
+                        return
+                    }
                     self.fillData(item: item, completion: completion)
                 }
                 
@@ -191,6 +203,7 @@ extension PokemonListViewModel {
         completion(self.offlineList, self.onlineList, self.pagedObject)
         if !offlineMode, onlineList?.count == pagedObject?.results?.count {
             self.delegate?.processFinish()
+            
         }
     }
 
@@ -252,7 +265,6 @@ extension PokemonListViewModel {
                 newItem.moves = moves
                 
                 try viewContext.save()
-                print("appflow:: addItem:A:")
                 return newItem
             }
             
@@ -260,7 +272,6 @@ extension PokemonListViewModel {
             return nil
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            
         }
         
         return nil

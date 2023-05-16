@@ -9,6 +9,6 @@ import Foundation
 import PokemonAPI
 
 protocol APIServiceProtocol {
-    func fetchData(paginationState:PaginationState<PKMPokemon>, completion: @escaping (PKMPagedObject<PKMPokemon>?) -> Void)
-    func fetchData(pokemonID:Int?, completion: @escaping (PKMPokemon?) -> Void)
+    func fetchData(paginationState:PaginationState<PKMPokemon>, completion: @escaping (PKMPagedObject<PKMPokemon>?, Error?) -> Void)
+    func fetchData(pokemonID:Int?, completion: @escaping (PKMPokemon?, Error?) -> Void)
 }
