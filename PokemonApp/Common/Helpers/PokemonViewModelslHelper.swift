@@ -73,28 +73,28 @@ struct PokemonViewModelslHelper {
         if let frontDefault = item?.sprites?.frontDefault, frontDefault != "" {
             images.append(frontDefault)
         }
-        if let frontFemale = item?.sprites?.frontFemale, frontFemale != ""{
-            images.append(frontFemale)
+        if let backDefault = item?.sprites?.backDefault, backDefault != "" {
+            images.append(backDefault)
         }
         if let frontShiny = item?.sprites?.frontShiny, frontShiny != "" {
             images.append(frontShiny)
         }
-        if let backDefault = item?.sprites?.backDefault, backDefault != "" {
-            images.append(backDefault)
+        if let backShiny = item?.sprites?.backShiny, backShiny != "" {
+            images.append(backShiny)
+        }
+        if let frontFemale = item?.sprites?.frontFemale, frontFemale != ""{
+            images.append(frontFemale)
         }
         if let backFemale = item?.sprites?.backFemale, backFemale != "" {
             images.append(backFemale)
         }
-        if let backShiny = item?.sprites?.backShiny, backShiny != "" {
-            images.append(backShiny)
+        if let frontShinyFemale = item?.sprites?.frontShinyFemale, frontShinyFemale != "" {
+            images.append(frontShinyFemale)
         }
         if let backShinyFemale = item?.sprites?.backShinyFemale, backShinyFemale != "" {
             images.append(backShinyFemale)
         }
-        if let frontShinyFemale = item?.sprites?.frontShinyFemale, frontShinyFemale != "" {
-            images.append(frontShinyFemale)
-        }
-        
+
         return images
     }
     

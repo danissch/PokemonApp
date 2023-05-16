@@ -288,7 +288,7 @@ extension PokemonListViewModel {
         
         do {
             
-            if !checkRecordExists(id: id, name: name ) {
+            if !checkRecordExists(id: id, name: name ), id != 0 {
                 let newItem = PokemonItem(context: viewContext)
                 newItem.id = Int16(id)
                 newItem.name = name

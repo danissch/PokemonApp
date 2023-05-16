@@ -86,7 +86,7 @@ struct PokemonListView: View {
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 
-            }.searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look for a Pokemon").disableAutocorrection(true)
+            }.searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always) ,prompt: "Look on this page").disableAutocorrection(true)
 
             loading?.frame(
                 minWidth: 0,
@@ -112,6 +112,17 @@ struct PokemonListView: View {
                         List {
                             ForEach(offlineSearchResults.indices, id: \.self){ pok in
                                 let pokemon = offlineSearchResults[pok]
+                                
+                                let pokemonCardView = PokemonCardView(
+                                    name: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                    imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                    images: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                    types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                    abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                    moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
+                                    isDetail: false
+                                ).padding(12)
+                                
                                 Button {
                                     self.setViewModelSelectedData(
                                         selectedName: getPokemonName(pokemonName: pokemon.name ?? ""),
@@ -125,15 +136,7 @@ struct PokemonListView: View {
                                     
                                 } label: {
                                     
-                                    PokemonCardView(
-                                        name: getPokemonName(pokemonName: pokemon.name ?? ""),
-                                        imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
-                                        images: getPokemonImages(pokemonName: pokemon.name ?? ""),
-                                        types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
-                                        abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
-                                        moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
-                                        isDetail: false
-                                    ).padding(12)
+                                    pokemonCardView
                                 
                                 }.sheet(isPresented: $showingSheet) {
                                     
@@ -146,11 +149,25 @@ struct PokemonListView: View {
                                         moves: viewModel?.selectedMoves
                                     )
                                     
+                                }.onAppear {
+                                    /*
+                                    if (offlineSearchResults.last?.name == pokemon.name){
+                                        guard let pagedObject = pagedObject else { return }
+                                        Task {
+                                            await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                                        }
+                                    }
+                                    */
                                 }
                                 
                             }
                             
-                        }
+                        }.refreshable(action: {
+                            guard let pagedObject = pagedObject else { return }
+                            Task {
+                                await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                            }
+                        })
                         .listStyle(.automatic).textSelection(.disabled)
                     }
                     
@@ -160,6 +177,17 @@ struct PokemonListView: View {
                         List {
                             ForEach(searchResults.indices, id: \.self){ pok in
                                 let pokemon = searchResults[pok]
+                                
+                                let pokemonCardView = PokemonCardView(
+                                    name: getPokemonName(pokemonName: pokemon.name ?? ""),
+                                    imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
+                                    images: getPokemonImages(pokemonName: pokemon.name ?? ""),
+                                    types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
+                                    abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
+                                    moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
+                                    isDetail: false
+                                ).padding(12)
+                                
                                 Button {
                                     self.setViewModelSelectedData(
                                         selectedName: getPokemonName(pokemonName: pokemon.name ?? ""),
@@ -173,15 +201,7 @@ struct PokemonListView: View {
                                     
                                 } label: {
                                     
-                                        PokemonCardView(
-                                            name: getPokemonName(pokemonName: pokemon.name ?? ""),
-                                            imageURLString: getPokemonImage(pokemonName: pokemon.name ?? ""),
-                                            images: getPokemonImages(pokemonName: pokemon.name ?? ""),
-                                            types: getPokemonTypes(pokemonName: pokemon.name ?? ""),
-                                            abilities: getPokemonAbilities(pokemonName: pokemon.name ?? ""),
-                                            moves: getPokemonMoves(pokemonName: pokemon.name ?? ""),
-                                            isDetail: false
-                                        ).padding(12)
+                                    pokemonCardView
                                     
                                 }.sheet(isPresented: $showingSheet) {
                                     
@@ -193,11 +213,22 @@ struct PokemonListView: View {
                                         abilities: viewModel?.selectedAbilities,
                                         moves: viewModel?.selectedMoves
                                     )
+                                }.onAppear {
+                                    if searchResults.last?.name == pokemon.name, rowsPerPage > 20 {
+                                        guard let pagedObject = pagedObject else { return }
+                                        Task {
+                                            await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                                        }
+                                    }
                                 }
-                                
                             }
                             
-                        }
+                        }.refreshable(action: {
+                            guard let pagedObject = pagedObject else { return }
+                            Task {
+                                await fetchPokemon(paginationState: .continuing(pagedObject, .page(pageIndex)))
+                            }
+                        })
                         .listStyle(.automatic).textSelection(.disabled)
                     }
                     
@@ -291,20 +322,20 @@ struct PokemonListView: View {
     var rowsPerPagePicker: some View {
         Picker("", selection: $rowsPerPage) {
             let limit0 = 10
-            let limit1 = 20
+            let limit1 = 30
             let limit2 = 50
             let limit3 = 100
             let limit4 = 200
-            let limit5 = 400
-            let limit6 = 800
+            //let limit5 = 400
+            //let limit6 = 800
             let label = "Limit "
             Text("\(label)\(limit0)").tag(limit0)
             Text("\(label)\(limit1)").tag(limit1)
             Text("\(label)\(limit2)").tag(limit2)
             Text("\(label)\(limit3)").tag(limit3)
             Text("\(label)\(limit4)").tag(limit4)
-            Text("\(label)\(limit5)").tag(limit5)
-            Text("\(label)\(limit6)").tag(limit6)
+            //Text("\(label)\(limit5)").tag(limit5)
+            //Text("\(label)\(limit6)").tag(limit6)
         }
         
         #if os(macOS)
@@ -314,6 +345,7 @@ struct PokemonListView: View {
         .onChange(of: rowsPerPage) { index in
             rowsPerPage = index
             Task {
+                loading = LoadingView()
                 await fetchPokemon()
                 pageIndex = 0
             }
